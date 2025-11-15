@@ -27,16 +27,16 @@ app.use('/api/ratings', ratingRoutes);
 // Error handling middleware (must be last)
 app.use(errorHandler);
 
-// Connect to DB (sync for Vercel, but we await in local startup)
+// Connect to DB (sync fallback for Vercel; full await in local mode)
 connectDB()
   .then(() => console.log('✅ MongoDB connected'))
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
-// For local development ONLY: Async start with listen
+// Local development ONLY: Run async server startup with listen
 if (require.main === module && process.env.NODE_ENV !== 'production') {
   const startServer = async () => {
     try {
-      await connectDB();  // Await connection (ensures DB ready)
+      await connectDB();  // Await full connection locally
       app.listen(port, () => {
         console.log(`🚀 Server is running on port ${port}`);
       });
@@ -48,5 +48,5 @@ if (require.main === module && process.env.NODE_ENV !== 'production') {
   startServer();
 }
 
-// Export for Vercel/serverless (ignored locally, but required for deployment)
+// Export for Vercel/serverless (always available, ignored locally)
 module.exports = app;
