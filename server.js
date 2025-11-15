@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const { connectDB } = require('./config/db');
+const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
 
 // Import routes
@@ -15,38 +15,30 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Health check (no DB needed)
+// Connect to MongoDB
+connectDB();
+
+// Health check
 app.get('/', (req, res) => {
-  res.json({ message: 'HomeNest server is running ✅' });
+  res.json({ 
+    message: 'HomeNest server is running ✅',
+    timestamp: new Date().toISOString()
+  });
 });
 
-// Routes
+// API Routes
 app.use('/api/properties', propertyRoutes);
 app.use('/api/ratings', ratingRoutes);
 
 // Error handling middleware (must be last)
 app.use(errorHandler);
 
-// Connect to DB (sync fallback for Vercel; full await in local mode)
-connectDB()
-  .then(() => console.log('✅ MongoDB connected'))
-  .catch(err => console.error('❌ MongoDB connection error:', err));
-
-// Local development ONLY: Run async server startup with listen
-if (require.main === module && process.env.NODE_ENV !== 'production') {
-  const startServer = async () => {
-    try {
-      await connectDB();  // Await full connection locally
-      app.listen(port, () => {
-        console.log(`🚀 Server is running on port ${port}`);
-      });
-    } catch (error) {
-      console.error('❌ Failed to start server:', error);
-      process.exit(1);
-    }
-  };
-  startServer();
+// Start server (for local development only)
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`🚀 Server is running on port ${port}`);
+  });
 }
 
-// Export for Vercel/serverless (always available, ignored locally)
+// Export for Vercel
 module.exports = app;
