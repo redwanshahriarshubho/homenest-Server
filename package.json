@@ -7,14 +7,20 @@
     "start": "node server.js",
     "dev": "nodemon server.js"
   },
-  "keywords": ["real-estate", "property", "rental", "nodejs"],
+  "keywords": [
+    "real-estate",
+    "property",
+    "rental",
+    "nodejs"
+  ],
   "author": "T.M.Redwan Shahriar",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2",
     "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.18.2",
     "mongodb": "^6.3.0",
-    "dotenv": "^16.3.1"
+    "mongoose": "^8.19.3"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
